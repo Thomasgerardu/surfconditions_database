@@ -1,0 +1,18 @@
+2024-11-07 16:24:01,840 [INFO] Starting the screenshot capture process.
+2024-11-07 16:24:01,840 [INFO] ====== WebDriver manager ======
+2024-11-07 16:24:02,751 [INFO] Get LATEST chromedriver version for google-chrome
+2024-11-07 16:24:02,936 [INFO] Get LATEST chromedriver version for google-chrome
+2024-11-07 16:24:03,046 [INFO] Driver [C:\Users\thoma\.wdm\drivers\chromedriver\win64\130.0.6723.116\chromedriver-win32/chromedriver.exe] found in cache
+2024-11-07 16:24:17,109 [INFO] Successfully fetched meteo data.
+2024-11-07 16:24:17,497 [INFO] Screenshot 1 saved as N_0.22m_1.95s_ENE_9.6kmh_20241107_162417.png
+2024-11-07 16:24:29,955 [INFO] Screenshot 2 saved as N_0.22m_1.95s_ENE_9.6kmh_20241107_162429.png
+2024-11-07 16:24:42,502 [INFO] Screenshot 3 saved as N_0.22m_1.95s_ENE_9.6kmh_20241107_162442.png
+2024-11-07 16:24:54,862 [INFO] Screenshot 4 saved as N_0.22m_1.95s_ENE_9.6kmh_20241107_162454.png
+2024-11-07 16:25:07,284 [INFO] Screenshot 5 saved as N_0.22m_1.95s_ENE_9.6kmh_20241107_162507.png
+2024-11-07 16:25:19,841 [INFO] Screenshot 6 saved as N_0.22m_1.95s_ENE_9.6kmh_20241107_162519.png
+2024-11-07 16:25:32,300 [INFO] Screenshot 7 saved as N_0.22m_1.95s_ENE_9.6kmh_20241107_162532.png
+2024-11-07 16:25:44,769 [INFO] Screenshot 8 saved as N_0.22m_1.95s_ENE_9.6kmh_20241107_162544.png
+2024-11-07 16:25:44,771 [INFO] Waiting until next capture cycle... Script is still running.
+2024-11-07 16:30:44,772 [INFO] Waiting until next capture cycle... Script is still running.
+2024-11-07 16:35:44,773 [INFO] Waiting until next capture cycle... Script is still running.
+2024-11-07 16:40:44,774 [INFO] Waiting until next capture cycle... Script is still running.

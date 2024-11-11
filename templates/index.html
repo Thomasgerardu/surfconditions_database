@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Surf Conditions Browser</title>
+    <style>
+        .explanation {
+            margin: 20px;
+            padding: 15px;
+            background-color: #f1f1f1;
+            border-radius: 5px;
+            font-family: Arial, sans-serif;
+            color: #333;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="explanation">
+        <h2>How to Use the Surf Conditions Browser</h2>
+        <p>Enter values for any of the following fields to search for matching surf conditions:</p>
+        <ul>
+            <li><strong>Wave Height (m)</strong>: Specify the wave height in meters.</li>
+            <li><strong>Wave Period (s)</strong>: Enter the wave period in seconds.</li>
+            <li><strong>Wave Direction</strong>: Choose a wave direction from the dropdown.</li>
+            <li><strong>Wind Speed (km/h)</strong>: Enter the wind speed in kilometers per hour.</li>
+            <li><strong>Wind Direction</strong>: Choose a wind direction from the dropdown.</li>
+        </ul>
+        <p>You can enter values in any combination, or leave fields blank to ignore them in the search.</p>
+    </div>
+    <script>
+        function searchConditions() {
+            const waveHeight = document.getElementById('waveHeight').value;
+            const wavePeriod = document.getElementById('wavePeriod').value;
+            const waveDirection = document.getElementById('waveDirection').value;
+            const windSpeed = document.getElementById('windSpeed').value;
+            const windDirection = document.getElementById('windDirection').value;
+
+            const params = new URLSearchParams();
+            if (waveHeight) params.append('wave_height', waveHeight);
+            if (wavePeriod) params.append('wave_period', wavePeriod);
+            if (waveDirection) params.append('wave_direction', waveDirection);
+            if (windSpeed) params.append('wind_speed', windSpeed);
+            if (windDirection) params.append('wind_direction', windDirection);
+
+            fetch('/search', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: params.toString()
+            })
+                .then(response => response.json())
+                .then(matches => {
+                    const resultsDiv = document.getElementById('results');
+                    resultsDiv.innerHTML = '<h3>Top 5 Matches</h3>';
+                    matches.forEach(filename => {
+                        const p = document.createElement('p');
+                        p.textContent = filename;
+                        resultsDiv.appendChild(p);
+                    });
+                });
+        }
+    </script>
+
+
+    <h1>Surf Conditions Browser</h1>
+    <label for="waveHeight">Wave Height (m):</label>
+    <input type="number" step="0.1" id="waveHeight"><br>
+
+    <label for="wavePeriod">Wave Period (s):</label>
+    <input type="number" step="0.1" id="wavePeriod"><br>
+
+    <label for="waveDirection">Wave Direction:</label>
+    <select id="waveDirection">
+        <option value="">Any</option>
+        <option value="N">N</option>
+        <option value="NNE">NNE</option>
+        <option value="NE">NE</option>
+        <option value="ENE">ENE</option>
+        <option value="E">E</option>
+        <option value="ESE">ESE</option>
+        <option value="SE">SE</option>
+        <option value="SSE">SSE</option>
+        <option value="S">S</option>
+        <option value="SSW">SSW</option>
+        <option value="SW">SW</option>
+        <option value="WSW">WSW</option>
+        <option value="W">W</option>
+        <option value="WNW">WNW</option>
+        <option value="NW">NW</option>
+        <option value="NNW">NNW</option>
+    </select><br>
+
+    <label for="windSpeed">Wind Speed (km/h):</label>
+    <input type="number" step="0.1" id="windSpeed"><br>
+
+    <label for="windDirection">Wind Direction:</label>
+    <select id="windDirection">
+        <option value="">Any</option>
+        <option value="N">N</option>
+        <option value="NNE">NNE</option>
+        <option value="NE">NE</option>
+        <option value="ENE">ENE</option>
+        <option value="E">E</option>
+        <option value="ESE">ESE</option>
+        <option value="SE">SE</option>
+        <option value="SSE">SSE</option>
+        <option value="S">S</option>
+        <option value="SSW">SSW</option>
+        <option value="SW">SW</option>
+        <option value="WSW">WSW</option>
+        <option value="W">W</option>
+        <option value="WNW">WNW</option>
+        <option value="NW">NW</option>
+        <option value="NNW">NNW</option>
+    </select><br>
+
+    <button onclick="searchConditions()">Search</button>
+
+    <div id="results"></div>
+</body>
+
+</html>

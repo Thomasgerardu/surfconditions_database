@@ -1,3 +1,5 @@
 .localsecret
 .log
+.xml
 data/
+venv/

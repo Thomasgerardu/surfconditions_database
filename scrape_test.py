@@ -63,7 +63,7 @@ def setup_driver():
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
     # driver.get("https://bit.ly/4gAqzaq")  # Webcam URL
     # driver.get("https://www.youtube.com/embed/8nn9fAr9LCE?autoplay=1&mute=1&rel=0&showinfo=0&vq=hd1080") Betere kwaliteit  
-    driver.get("https://www.youtube.com/embed/8nn9fAr9LCE?autoplay=1&mute=1&rel=0&showinfo=0&vq=hd2160")  
+    driver.get("https://www.youtube.com/embed/XB2T9RjIM-g?autoplay=1&fs=1&rel=0&modestbranding=1&mute=1&vq=hd2160")  
     time.sleep(5)  # Allow time for the page to load
     return driver
 

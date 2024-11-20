@@ -1,0 +1,5 @@
+From AWS to local machine:
+scp -i "C:\Users\thoma\Downloads\myspark.pem" -r ubuntu@ec2-3-91-74-155.compute-1.amazonaws.com:~/my_folder/data* "C:\Github\surfconditions_database\recievemap"
+
+from local machine to AWS
+scp -i "C:\Users\thoma\Downloads\myspark.pem" -r "C:\Github\surfconditions_database\recievemap" ubuntu@ec2-3-91-74-155.compute-1.amazonaws.com:~/my_folder/

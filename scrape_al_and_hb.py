@@ -1,22 +1,3 @@
-# CONTENT
-
-# import libs
-
-# scrape heartbach cam for images
-    # scrape conditions from:
-    # (1) same url, easy but basic information (no swell period) 
-    # (2) scrape by API request to stormglass API. Includes swell period but not tide information
-    # (3) scrape from API that heartbeach uses. This API is ellegal but includes tidal data, hence all data that we (ideally) want.
-# COMMENT: tidal data can later be added if we keep track of datetime, so not super important to collect now, stormglass it is. 
-# if we include tide information, we shhould really make 4 tide groups, low-mid(lm),mid-high(mh),high-mid(hm),mid-low(ml). We need to create some sort of logic to calculate this
-# setup filename, that should include swellheight_swellperiod(optional)_winddirection_windspeed_optional(tide)_datetime
-# what we can include in the filename depends on the API method. 
-# with filename we need some sort of logic that if a file already exists, we need to save it bi increasing a counter or something. 
-
-# SCHEDULE
-# (1) some sort of cronjob (but in  windows = Schedule?) that activates the script at certain time intervals
-# (2) schedule logic should be in the script, and the script should therefore run continuously, but only does things every hour. 
-
 import time
 import os
 import logging
@@ -25,6 +6,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
+
 from PIL import Image
 from io import BytesIO
 import requests
@@ -43,27 +25,24 @@ logging.basicConfig(
     ]
 )
 
-# Ensure the 'data' folder exists
-os.makedirs("data", exist_ok=True)
+# Folders and urls
+os.makedirs("data_aloha", exist_ok=True)
+os.makedirs("data_heartbeach", exist_ok=True)
+aloha_yt_url = "https://www.youtube.com/embed/XB2T9RjIM-g?autoplay=1&fs=1&rel=0&modestbranding=1&mute=1&vq=hd1080"
+heartbeach_yt_url = "https://www.youtube.com/embed/8nn9fAr9LCE?autoplay=1&mute=1&rel=0&showinfo=0&vq=hd1080"
 tide_file_path = r"C:/Github/surfconditions_database/hwlw-SCHEVNGN-20240101-20241231.xml"
 max_duration = timedelta(hours=10)
 start_time = datetime.now()
 
-
-#%% Screenshots funcs
-
 #%% Supporting funcs
 
-
-def setup_driver():
+def setup_driver(url):
     # Selenium setup for headless Chrome
     options = Options()
     options.add_argument("--headless")
     options.add_argument("--window-size=1920,1080")
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
-    # driver.get("https://bit.ly/4gAqzaq")  # Webcam URL
-    # driver.get("https://www.youtube.com/embed/8nn9fAr9LCE?autoplay=1&mute=1&rel=0&showinfo=0&vq=hd1080") Betere kwaliteit  
-    driver.get("https://www.youtube.com/embed/XB2T9RjIM-g?autoplay=1&fs=1&rel=0&modestbranding=1&mute=1&vq=hd2160")  
+    driver.get(url)
     time.sleep(5)  # Allow time for the page to load
     return driver
 
@@ -84,24 +63,31 @@ def degrees_to_dir16(degrees: float) -> str:
     return directions[idx]
 
 
-def create_filename(timestamp: str, list_of_params: list, tideregime:str) -> str:
+def create_filename(timestamp: str, list_of_params: list, tideregime: str, identifier: str) -> str:
     # Create a filename based on meteorological data
     wave_direction, wave_height, wave_period, wind_direction, wind_speed = list_of_params
     wind_speed_formatted = f"{float(wind_speed) * 3.6:.1f}kmh" if wind_speed != "FF" else "FF"
-    return f"{wave_direction}_{wave_height}m_{wave_period}s_{wind_direction}_{wind_speed_formatted}_{tideregime}_{timestamp}.png"
+    return f"{wave_direction}_{wave_height}m_{wave_period}s_{wind_direction}_{wind_speed_formatted}_{tideregime}_{timestamp}_{identifier}.png"
 
 
-def wait_until_next_hour():
-    # Heartbeat logger during long waits
-    next_capture_time = datetime.now() + timedelta(minutes=60) - timedelta(seconds=140)
-    while datetime.now() < next_capture_time:
-        logging.info("Waiting until next capture cycle... Script is still running.")
-        time.sleep(300)  # Heartbeat every 5 minutes during wait
+def wait_until_next_hour(start_time):
+    """
+    Wait until the next capture cycle begins, subtracting the script execution time from the wait duration.
+    """
+    elapsed_time = datetime.now() - start_time
+    next_capture_time = start_time + timedelta(minutes=60)
+    remaining_time = (next_capture_time - datetime.now()).total_seconds()
+
+    if remaining_time > 0:
+        logging.info(f"Waiting for {remaining_time // 60:.0f} minutes and {remaining_time % 60:.0f} seconds until the next capture cycle.")
+        time.sleep(remaining_time)
+    else:
+        logging.warning("Processing exceeded the one-hour cycle. Starting next cycle immediately.")
+
 
 
 
 #%% Fetch from internet funcs
-
 
 def fetch_meteo_data(APIKEY: str) -> list:
     # Fetch meteorological data from Stormglass
@@ -136,27 +122,8 @@ def fetch_meteo_data(APIKEY: str) -> list:
     wind_speed = data['windSpeed'].get('noaa', "FF")
     return [wave_direction, wave_height, wave_period, wind_direction, wind_speed]
 
-
-# def capture_screenshots(driver, meteo_params):
-#     # Fetch tiderange
-#     tide_data = parse_tides(tide_file_path)
-#     current_tide_phase = find_current_tide_phase(tide_data)
-#     # Capture screenshots with 12-second intervals
-#     for i in range(28):
-#         try:
-#             screenshot = driver.get_screenshot_as_png()
-#             image = Image.open(BytesIO(screenshot))
-#             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-#             filename = f"data/{create_filename(timestamp, meteo_params,current_tide_phase)}"
-#             image.save(filename)
-#             logging.info(f"Screenshot {i+1} saved as {filename[5:]}")
-#         except Exception as e:
-#             logging.error(f"Error taking screenshot {i+1}: {e}")
-#         if i < 7:
-#             time.sleep(5)
-
-def capture_screenshots(driver, meteo_params):
-     # Fetch tiderange
+def capture_screenshots(driver, meteo_params, folder, identifier):
+    # Fetch tide range
     tide_data = parse_tides(tide_file_path)
     current_tide_phase = find_current_tide_phase(tide_data)
     for i in range(50):
@@ -164,18 +131,13 @@ def capture_screenshots(driver, meteo_params):
             screenshot = driver.get_screenshot_as_png()
             image = Image.open(BytesIO(screenshot))
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            filename = f"data/{create_filename(timestamp, meteo_params,current_tide_phase)}"
+            filename = f"{folder}/{create_filename(timestamp, meteo_params, current_tide_phase, identifier)}"
             image.save(filename)
-            logging.info(f"Screenshot {i+1} saved as {filename[5:]}")
-        except WebDriverException as e:
-            logging.error(f"Error taking screenshot {i + 1}: {e}")
-            driver.quit()  # Ensure the driver is closed before restarting
-            driver = setup_driver()  # Restart the driver by calling your setup function
+            logging.info(f"Screenshot {i+1} saved as {filename[len(folder)+1:]}")
         except Exception as e:
             logging.error(f"Unexpected error taking screenshot {i + 1}: {e}")
         if i < 49:
             time.sleep(3)
-    return driver  # Return the potentially restarted driver
 
 
 
@@ -235,18 +197,22 @@ def find_current_tide_phase(tide_data):
 
 def main():
     logging.info("Starting the screenshot capture process.")
-    driver = setup_driver()
     APIKEY = load_api_key()
+    meteo_params = fetch_meteo_data(APIKEY)
+    heartbeach_driver = setup_driver(heartbeach_yt_url)
+    aloha_driver = setup_driver(aloha_yt_url)
     try:
         while datetime.now() - start_time < max_duration:
-            meteo_params = fetch_meteo_data(APIKEY)
-            capture_screenshots(driver, meteo_params)
-            wait_until_next_hour()
+            cycle_start_time = datetime.now()
+            capture_screenshots(heartbeach_driver, meteo_params, "data_heartbeach", "h")
+            capture_screenshots(aloha_driver, meteo_params, "data_aloha", "a")
+            wait_until_next_hour(cycle_start_time)
     except Exception as e:
         logging.error(f"Error during the screenshot capture process: {e}")
     finally:
-        driver.quit()
-        logging.info("Script finished, browser closed.")
+        heartbeach_driver.quit()
+        aloha_driver.quit()
+        logging.info("Script finished, browsers closed.")
 
 if __name__ == "__main__":
     main()

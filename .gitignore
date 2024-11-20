@@ -2,4 +2,6 @@
 .log
 .xml
 data/
+data_aloha/
+data_heartbeach/
 venv/

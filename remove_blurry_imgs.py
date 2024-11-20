@@ -58,13 +58,15 @@ def main() -> None:
     # Cleanup for data_aloha folder
     cleanup_blurry_images(
         folder_path="data_aloha",
-        threshold=139.0  # Threshold for aloha
+        # threshold=139.0  # Great quality
+        threshold=120.0  # Absolute minimum
     )
 
     # Cleanup for data_heartbeach folder
     cleanup_blurry_images(
         folder_path="data_heartbeach",
-        threshold=51.0  # Threshold for heartbeach
+        # threshold=51.0  # Great quality
+        threshold=30.0  # Absolute minimum
     )
 
 

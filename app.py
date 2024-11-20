@@ -1,52 +1,83 @@
-from flask import Flask, request, jsonify, render_template, url_for
+from flask import Flask, render_template, send_from_directory, request, jsonify
 import os
+import sqlite3
 
 app = Flask(__name__)
 
-# Directory where screenshots are stored
-DATA_DIR = "data"
+# Define the data directories
+DATA_DIRS = {
+    "data_aloha": "data_aloha",
+    "data_heartbeach": "data_heartbeach"
+}
 
-def find_best_matches(wave_height=None, wave_period=None, wave_direction=None, wind_speed=None, wind_direction=None, top_n=5):
-    matches = []
+# Path to the SQLite database
+DATABASE_PATH = "surfconditions.db"
 
-    for filename in os.listdir(DATA_DIR):
-        if filename.endswith(".png"):
-            try:
-                parts = filename.split("_")
-                file_wave_height = float(parts[1][:-1])  # "0.5m" -> 0.5
-                file_wave_period = float(parts[2][:-1])   # "5s" -> 5
-                file_wave_direction = parts[0]           # "NNE", etc.
-                file_wind_speed = float(parts[4][:-3])    # "3.2kmh" -> 3.2
-                file_wind_direction = parts[3]           # "SE", etc.
+# Function to find the best matches
+def find_best_matches(wave_height=None, wave_period=None, wave_direction=None, wind_speed=None, wind_direction=None, top_n=10):
+    query = "SELECT folder, filename FROM images WHERE 1=1"
+    params = []
 
-                # Calculate score based on available inputs
-                score = 0
-                if wave_height is not None:
-                    score += abs(file_wave_height - wave_height) * 10
-                if wave_period is not None:
-                    score += abs(file_wave_period - wave_period)
-                if wave_direction:
-                    score += 0 if file_wave_direction == wave_direction else 5
-                if wind_speed is not None:
-                    score += abs(file_wind_speed - wind_speed)
-                if wind_direction:
-                    score += 0 if file_wind_direction == wind_direction else 5
+    if wave_height is not None:
+        query += " AND wave_height BETWEEN ? AND ?"
+        params.extend([wave_height - 0.5, wave_height + 0.5])  # Example range
+    if wave_period is not None:
+        query += " AND wave_period BETWEEN ? AND ?"
+        params.extend([wave_period - 1, wave_period + 1])
+    if wave_direction is not None:
+        query += " AND wave_direction = ?"
+        params.append(wave_direction)
+    if wind_speed is not None:
+        query += " AND wind_speed BETWEEN ? AND ?"
+        params.extend([wind_speed - 2, wind_speed + 2])  # Example range
+    if wind_direction is not None:
+        query += " AND wind_direction = ?"
+        params.append(wind_direction)
 
-                matches.append((score, filename))
-            except (IndexError, ValueError):
-                continue
+    query += " ORDER BY RANDOM() LIMIT ?"
+    params.append(top_n)
 
-    matches.sort()
-    return [url_for('static', filename=f"data/{match[1]}") for match in matches[:top_n]]
+    with sqlite3.connect(DATABASE_PATH) as conn:
+        cur = conn.cursor()
+        cur.execute(query, params)
+        results = cur.fetchall()
+
+    # Construct file paths for the results
+    return [f"/serve/{folder}/{filename}" for folder, filename in results]
+
+
+@app.route('/serve/<folder>/<filename>')
+def serve_image(folder, filename):
+    """
+    Dynamically serves images from the data folders.
+    """
+    if folder not in DATA_DIRS:
+        return "Folder not found", 404
+    folder_path = DATA_DIRS[folder]
+    return send_from_directory(folder_path, filename)
+
+
+@app.route('/')
+def index():
+    """
+    Renders the main search page.
+    """
+    return render_template('index.html')
+
 
 @app.route('/search', methods=['POST'])
 def search():
+    """
+    Handles search requests and returns the top matching images.
+    """
+    # Parse form data
     wave_height = float(request.form.get('wave_height')) if request.form.get('wave_height') else None
     wave_period = float(request.form.get('wave_period')) if request.form.get('wave_period') else None
     wave_direction = request.form.get('wave_direction') if request.form.get('wave_direction') else None
     wind_speed = float(request.form.get('wind_speed')) if request.form.get('wind_speed') else None
     wind_direction = request.form.get('wind_direction') if request.form.get('wind_direction') else None
 
+    # Find matches
     matches = find_best_matches(
         wave_height=wave_height,
         wave_period=wave_period,
@@ -57,9 +88,6 @@ def search():
 
     return jsonify(matches)
 
-@app.route('/')
-def index():
-    return render_template('index.html')
 
 if __name__ == '__main__':
     app.run(debug=True)

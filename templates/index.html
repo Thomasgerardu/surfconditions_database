@@ -4,154 +4,62 @@
 <head>
     <meta charset="UTF-8">
     <title>Surf Conditions Browser</title>
-    <style>
-        .explanation {
-            margin: 20px;
-            padding: 15px;
-            background-color: #f1f1f1;
-            border-radius: 5px;
-            font-family: Arial, sans-serif;
-            color: #333;
-        }
-
-        .result-image {
-            margin: 10px;
-            width: 200px;
-            height: auto;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal img {
-            max-width: 90%;
-            max-height: 90%;
-        }
-
-        .modal .close {
-            position: absolute;
-            top: 10px;
-            right: 20px;
-            font-size: 30px;
-            color: white;
-            cursor: pointer;
-        }
-    </style>
+    <link rel="stylesheet" href="static/style.css">
 </head>
 
 <body>
-    <div class="explanation">
-        <h2>How to Use the Surf Conditions Browser</h2>
-        <p>Enter values for any of the following fields to search for matching surf conditions:</p>
-        <ul>
-            <li><strong>Wave Height (m)</strong>: Specify the wave height in meters.</li>
-            <li><strong>Wave Period (s)</strong>: Enter the wave period in seconds.</li>
-            <li><strong>Wave Direction</strong>: Choose a wave direction from the dropdown.</li>
-            <li><strong>Wind Speed (km/h)</strong>: Enter the wind speed in kilometers per hour.</li>
-            <li><strong>Wind Direction</strong>: Choose a wind direction from the dropdown.</li>
-        </ul>
+    <h1>Surf Conditions Browser</h1>
+    <p>Enter desired surf conditions below to find the best matches.</p>
+    <p>Results are ranked by score. Lower scores mean the surf conditions are closer to your search. A perfect match will have a score of 0.</p>
+
+    <div>
+        <label for="waveHeight">Wave Height (m):</label>
+        <input type="number" step="0.1" id="waveHeight"><br>
+
+        <label for="wavePeriod">Wave Period (s):</label>
+        <input type="number" step="0.1" id="wavePeriod"><br>
+
+        <label for="waveDirection">Wave Direction:</label>
+        <select id="waveDirection">
+            <option value="">Any</option>
+            <option value="N">N</option>
+            <option value="NE">NE</option>
+            <option value="E">E</option>
+            <option value="SE">SE</option>
+            <option value="S">S</option>
+            <option value="SW">SW</option>
+            <option value="W">W</option>
+            <option value="NW">NW</option>
+        </select><br>
+
+        <label for="windSpeed">Wind Speed (km/h):</label>
+        <input type="number" step="0.1" id="windSpeed"><br>
+
+        <label for="windDirection">Wind Direction:</label>
+        <select id="windDirection">
+            <option value="">Any</option>
+            <option value="N">N</option>
+            <option value="NE">NE</option>
+            <option value="E">E</option>
+            <option value="SE">SE</option>
+            <option value="S">S</option>
+            <option value="SW">SW</option>
+            <option value="W">W</option>
+            <option value="NW">NW</option>
+        </select><br>
+
+        <button id="searchButton">Search</button>
     </div>
 
-    <h1>Surf Conditions Browser</h1>
-    <label for="waveHeight">Wave Height (m):</label>
-    <input type="number" step="0.1" id="waveHeight"><br>
+    <ul id="results" class="result-list"></ul>
 
-    <label for="wavePeriod">Wave Period (s):</label>
-    <input type="number" step="0.1" id="wavePeriod"><br>
-
-    <label for="waveDirection">Wave Direction:</label>
-    <select id="waveDirection">
-        <option value="">Any</option>
-        <!-- Direction options -->
-    </select><br>
-
-    <label for="windSpeed">Wind Speed (km/h):</label>
-    <input type="number" step="0.1" id="windSpeed"><br>
-
-    <label for="windDirection">Wind Direction:</label>
-    <select id="windDirection">
-        <option value="">Any</option>
-        <!-- Direction options -->
-    </select><br>
-
-    <button onclick="searchConditions()">Search</button>
-
-    <div id="results"></div>
-
-    <div class="modal" id="imageModal">
-        <span class="close" id="closeModal">&times;</span>
+    <!-- Modal for image viewing -->
+    <div id="imageModal" class="modal">
+        <span id="closeModal" class="close">&times;</span>
         <img id="modalImage" src="" alt="Large View">
     </div>
 
-    <script>
-        function searchConditions() {
-            const waveHeight = document.getElementById('waveHeight').value;
-            const wavePeriod = document.getElementById('wavePeriod').value;
-            const waveDirection = document.getElementById('waveDirection').value;
-            const windSpeed = document.getElementById('windSpeed').value;
-            const windDirection = document.getElementById('windDirection').value;
-
-            const params = new URLSearchParams();
-            if (waveHeight) params.append('wave_height', waveHeight);
-            if (wavePeriod) params.append('wave_period', wavePeriod);
-            if (waveDirection) params.append('wave_direction', waveDirection);
-            if (windSpeed) params.append('wind_speed', windSpeed);
-            if (windDirection) params.append('wind_direction', windDirection);
-
-            fetch('/search', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: params.toString()
-            })
-                .then(response => response.json())
-                .then(matches => {
-                    const resultsDiv = document.getElementById('results');
-                    resultsDiv.innerHTML = '<h3>Top 5 Matches</h3>';
-                    matches.forEach(url => {
-                        const img = document.createElement('img');
-                        img.src = url;
-                        img.alt = "Matching Condition Image";
-                        img.className = "result-image";
-                        img.onclick = () => showModal(url);
-                        resultsDiv.appendChild(img);
-                    });
-                });
-        }
-
-        const modal = document.getElementById('imageModal');
-        const modalImage = document.getElementById('modalImage');
-        const closeModal = document.getElementById('closeModal');
-
-        function showModal(imageSrc) {
-            modalImage.src = imageSrc;
-            modal.style.display = 'flex';
-        }
-
-        closeModal.onclick = () => {
-            modal.style.display = 'none';
-        };
-
-        window.onkeydown = (event) => {
-            if (event.key === 'Escape') {
-                modal.style.display = 'none';
-            }
-        };
-
-        window.onclick = (event) => {
-            if (event.target === modal) {
-                modal.style.display = 'none';
-            }
-        };
-    </script>
+    <script src="static/app.js"></script>
 </body>
 
 </html>

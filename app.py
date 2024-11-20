@@ -9,41 +9,112 @@ DATA_DIRS = {
     "data_aloha": "data_aloha",
     "data_heartbeach": "data_heartbeach"
 }
-
 # Path to the SQLite database
 DATABASE_PATH = "surfconditions.db"
+# Map to 8 primary compass directions
+PRIMARY_DIRECTIONS = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"]
 
-# Function to find the best matches
-def find_best_matches(wave_height=None, wave_period=None, wave_direction=None, wind_speed=None, wind_direction=None, top_n=10):
-    query = "SELECT folder, filename FROM images WHERE 1=1"
-    params = []
+def simplify_direction(direction):
+    """
+    Simplifies 16-point compass directions to 8-point compass directions.
+    """
+    mapping = {
+        "N": "N", "NNE": "N", "NE": "NE", "ENE": "NE",
+        "E": "E", "ESE": "E", "SE": "SE", "SSE": "SE",
+        "S": "S", "SSW": "S", "SW": "SW", "WSW": "SW",
+        "W": "W", "WNW": "W", "NW": "NW", "NNW": "NW"
+    }
+    return mapping.get(direction, direction)
 
+def calculate_score(file_metadata, user_input):
+    """
+    Calculates a weighted score based on the user's input and file metadata.
+
+    Args:
+        file_metadata (dict): Metadata for the file (wave_height, wave_period, etc.).
+        user_input (dict): User-provided surf conditions.
+
+    Returns:
+        float: The calculated score.
+    """
+    wave_height = user_input.get("wave_height")
+    wave_period = user_input.get("wave_period")
+    wave_direction = user_input.get("wave_direction")
+    wind_speed = user_input.get("wind_speed")
+    wind_direction = user_input.get("wind_direction")
+
+    # Initialize score
+    score = 0
+
+    # Wave height (50%)
     if wave_height is not None:
-        query += " AND wave_height BETWEEN ? AND ?"
-        params.extend([wave_height - 0.5, wave_height + 0.5])  # Example range
-    if wave_period is not None:
-        query += " AND wave_period BETWEEN ? AND ?"
-        params.extend([wave_period - 1, wave_period + 1])
-    if wave_direction is not None:
-        query += " AND wave_direction = ?"
-        params.append(wave_direction)
+        score += (abs(file_metadata["wave_height"] - wave_height) / 3) * 50
+
+    # Wind speed (20%)
     if wind_speed is not None:
-        query += " AND wind_speed BETWEEN ? AND ?"
-        params.extend([wind_speed - 2, wind_speed + 2])  # Example range
-    if wind_direction is not None:
-        query += " AND wind_direction = ?"
-        params.append(wind_direction)
+        score += (abs(file_metadata["wind_speed"] - wind_speed) / 60) * 20
 
-    query += " ORDER BY RANDOM() LIMIT ?"
-    params.append(top_n)
+    # Wave direction (15%)
+    if wave_direction:
+        file_wave_direction = simplify_direction(file_metadata["wave_direction"])
+        if file_wave_direction != wave_direction:
+            score += 15
 
-    with sqlite3.connect(DATABASE_PATH) as conn:
+    # Wind direction (15%)
+    if wind_direction:
+        file_wind_direction = simplify_direction(file_metadata["wind_direction"])
+        if file_wind_direction != wind_direction:
+            score += 15
+
+    # Wave period (optional, lesser weight)
+    if wave_period is not None:
+        score += abs(file_metadata["wave_period"] - wave_period)
+
+    return score
+
+
+def find_best_matches(wave_height=None, wave_period=None, wave_direction=None, wind_speed=None, wind_direction=None, top_n=10):
+    """
+    Finds the best matching images based on the provided conditions.
+    """
+    with sqlite3.connect("surfconditions.db") as conn:
         cur = conn.cursor()
-        cur.execute(query, params)
+        cur.execute("SELECT folder, filename, wave_height, wave_period, wave_direction, wind_speed, wind_direction FROM images")
         results = cur.fetchall()
 
-    # Construct file paths for the results
-    return [f"/serve/{folder}/{filename}" for folder, filename in results]
+    matches = []
+    for row in results:
+        folder, filename, file_wave_height, file_wave_period, file_wave_direction, file_wind_speed, file_wind_direction = row
+
+        # Metadata for the file
+        file_metadata = {
+            "wave_height": file_wave_height,
+            "wave_period": file_wave_period,
+            "wave_direction": file_wave_direction,
+            "wind_speed": file_wind_speed,
+            "wind_direction": file_wind_direction
+        }
+
+        # User-provided input
+        user_input = {
+            "wave_height": wave_height,
+            "wave_period": wave_period,
+            "wave_direction": wave_direction,
+            "wind_speed": wind_speed,
+            "wind_direction": wind_direction
+        }
+
+        # Calculate the score
+        score = calculate_score(file_metadata, user_input)
+
+        # Add the match with its score
+        matches.append((score, folder, filename))
+
+    # Sort matches by score (lowest score = better match)
+    matches.sort(key=lambda x: x[0])
+
+    # Return the top matches as URLs
+    return [f"/serve/{match[1]}/{match[2]}" for match in matches[:top_n]]
 
 
 @app.route('/serve/<folder>/<filename>')
@@ -64,11 +135,10 @@ def index():
     """
     return render_template('index.html')
 
-
 @app.route('/search', methods=['POST'])
 def search():
     """
-    Handles search requests and returns the top matching images.
+    Handles search requests and returns the top matching images with detailed metadata.
     """
     # Parse form data
     wave_height = float(request.form.get('wave_height')) if request.form.get('wave_height') else None
@@ -77,16 +147,55 @@ def search():
     wind_speed = float(request.form.get('wind_speed')) if request.form.get('wind_speed') else None
     wind_direction = request.form.get('wind_direction') if request.form.get('wind_direction') else None
 
-    # Find matches
-    matches = find_best_matches(
-        wave_height=wave_height,
-        wave_period=wave_period,
-        wave_direction=wave_direction,
-        wind_speed=wind_speed,
-        wind_direction=wind_direction
-    )
+    # Query the database and calculate matches
+    with sqlite3.connect("surfconditions.db") as conn:
+        cur = conn.cursor()
+        cur.execute("SELECT folder, filename, wave_height, wave_period, wave_direction, wind_speed, wind_direction FROM images")
+        results = cur.fetchall()
 
-    return jsonify(matches)
+    matches = []
+    for row in results:
+        folder, filename, file_wave_height, file_wave_period, file_wave_direction, file_wind_speed, file_wind_direction = row
+
+        # Metadata for the file
+        file_metadata = {
+            "wave_height": file_wave_height,
+            "wave_period": file_wave_period,
+            "wave_direction": file_wave_direction,
+            "wind_speed": file_wind_speed,
+            "wind_direction": file_wind_direction
+        }
+
+        # User input
+        user_input = {
+            "wave_height": wave_height,
+            "wave_period": wave_period,
+            "wave_direction": wave_direction,
+            "wind_speed": wind_speed,
+            "wind_direction": wind_direction
+        }
+
+        # Calculate score and differences
+        score = calculate_score(file_metadata, user_input)
+        differences = {
+            "wave_height_diff": abs(file_wave_height - wave_height) if wave_height is not None else None,
+            "wave_period_diff": abs(file_wave_period - wave_period) if wave_period is not None else None,
+            "wave_direction_diff": file_wave_direction != wave_direction if wave_direction else None,
+            "wind_speed_diff": abs(file_wind_speed - wind_speed) if wind_speed is not None else None,
+            "wind_direction_diff": file_wind_direction != wind_direction if wind_direction else None,
+        }
+
+        matches.append({
+            "score": score,
+            "folder": folder,
+            "filename": filename,
+            "differences": differences
+        })
+
+    # Sort matches by score and return the top N
+    matches.sort(key=lambda x: x["score"])
+    return jsonify(matches[:10])
+
 
 
 if __name__ == '__main__':

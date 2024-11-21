@@ -8,47 +8,112 @@
 </head>
 
 <body>
-    <h1>Surf Conditions Browser</h1>
-    <p>Enter desired surf conditions below to find the best matches.</p>
-    <p>Results are ranked by score. Lower scores mean the surf conditions are closer to your search. A perfect match will have a score of 0.</p>
+    <div class="header">
+        <a href="#page1">Page 1</a>
+        <a href="#page2">Page 2</a>
+        <a href="#page3">Page 3</a>
+    </div>
+    <div class="content">
+        <div class="block">
+            <img src="https://via.placeholder.com/150" alt="Placeholder Image">
+        </div>
+        <div class="block">
+            <h1>Surf Conditions Browser</h1>
+            <p>I got the inspiration for this website through surfing and my enthusiasm for Python. Often, surfers check
+                charts and websites for the best forecasts to be able to surf in the best conditions. Websites will
+                sometimes have star reviews of the surf conditions, giving an indication of how good the surf is likely
+                to be for less-experienced forecast readers, or very detailed charts and tables for the more
+                experienced. On top of that, we have the luxury in the Netherlands of great webcams, available 24/7.
+                However, many times I have been disappointed by forecasts. The setup looks great and the conditions seem
+                promising, but when the time comes, the surf still looks bad. For this reason, I wanted to capture the
+                live surf conditions using webcam images of those conditions. This way, we can create a database to
+                browse and see what 2m swell with an 8-second period and SW swell would actually look like!
+            </p>
+            <h3>Filenames</h3>
+            <p>Each image filename contains detailed information about the surf conditions at the time it was captured.
+                Here's how the format works:</p>
+            <ul>
+                <li><strong>Wave Direction:</strong> Indicates the direction of the waves (e.g., <code>N</code>,
+                    <code>NE</code>, <code>E</code>).</li>
+                <li><strong>Wave Height:</strong> Specifies the height of the waves in meters (e.g., <code>2.1m</code>).
+                </li>
+                <li><strong>Wave Period:</strong> Represents the time interval between waves, in seconds (e.g.,
+                    <code>6.5s</code>).</li>
+                <li><strong>Wind Direction:</strong> Shows the direction of the wind (e.g., <code>NW</code>,
+                    <code>SE</code>).</li>
+                <li><strong>Wind Speed:</strong> The speed of the wind, converted to km/h and formatted with
+                    <code>kmh</code> (e.g., <code>15.3kmh</code>).</li>
+                <li><strong>Tide Regime:</strong> Indicates the tidal phase (e.g., <code>ml</code> for mid-low,
+                    <code>mh</code> for mid-high).</li>
+                <li><strong>Timestamp:</strong> The date and time the image was captured in the format
+                    <code>YYYYMMDD_HHMMSS</code> (e.g., <code>20241111_091723</code>).</li>
+                <li><strong>Identifier:</strong> Identifier for webcamshot of Aloha or Heartbeach (e.g., <code>a</code>,
+                    <code>h</code>).</li>
+            </ul>
+            <h3>How to use this site?</h3>
+            <p>Enter your desired surf conditions below to find the best matches. Results are ranked by score, and <u>lower scores</u> mean the surf conditions are closer to your input. A perfect match will have a score of 0. To query a single parameter, simply input the desired value for that parameter and leave the other fields blank—they will be ignored in the scoring.</p>
 
-    <div>
-        <label for="waveHeight">Wave Height (m):</label>
-        <input type="number" step="0.1" id="waveHeight"><br>
+            <p>The score is calculated based on the following factors, with each weighted differently to reflect its importance:</p>
+            <ul>
+                <li><strong>Wave Height (50%):</strong> Larger differences from your desired wave height contribute significantly to the score.</li>
+                <li><strong>Wind Speed (20%):</strong> Smaller differences from your desired wind speed result in a lower score.</li>
+                <li><strong>Wave Direction (15%):</strong> A mismatch between your desired and the actual wave direction adds a penalty to the score.</li>
+                <li><strong>Wind Direction (15%):</strong> A mismatch between your desired and the actual wind direction also adds a penalty.</li>
+                <li><strong>Wave Period:</strong> Although less critical, differences in wave period still contribute to the score.</li>
+            </ul>
+            <p>This scoring system prioritizes wave height as the most important factor, followed by wind speed, and then the alignment of wave and wind directions. The closer the conditions match your search, the lower the score will be.</p>
+            
 
-        <label for="wavePeriod">Wave Period (s):</label>
-        <input type="number" step="0.1" id="wavePeriod"><br>
+        </div>
+        <div class="block">
+            <img src="https://via.placeholder.com/150" alt="Placeholder Image">
+        </div>
+    </div>
 
-        <label for="waveDirection">Wave Direction:</label>
-        <select id="waveDirection">
-            <option value="">Any</option>
-            <option value="N">N</option>
-            <option value="NE">NE</option>
-            <option value="E">E</option>
-            <option value="SE">SE</option>
-            <option value="S">S</option>
-            <option value="SW">SW</option>
-            <option value="W">W</option>
-            <option value="NW">NW</option>
-        </select><br>
-
-        <label for="windSpeed">Wind Speed (km/h):</label>
-        <input type="number" step="0.1" id="windSpeed"><br>
-
-        <label for="windDirection">Wind Direction:</label>
-        <select id="windDirection">
-            <option value="">Any</option>
-            <option value="N">N</option>
-            <option value="NE">NE</option>
-            <option value="E">E</option>
-            <option value="SE">SE</option>
-            <option value="S">S</option>
-            <option value="SW">SW</option>
-            <option value="W">W</option>
-            <option value="NW">NW</option>
-        </select><br>
-
-        <button id="searchButton">Search</button>
+    <div class="form-container">
+        <div class="form-row">
+            <label for="waveHeight">Wave Height (m):</label>
+            <input type="number" step="0.1" id="waveHeight">
+        </div>
+        <div class="form-row">
+            <label for="wavePeriod">Wave Period (s):</label>
+            <input type="number" step="0.1" id="wavePeriod">
+        </div>
+        <div class="form-row">
+            <label for="waveDirection">Wave Direction:</label>
+            <select id="waveDirection">
+                <option value="">Any</option>
+                <option value="N">N</option>
+                <option value="NE">NE</option>
+                <option value="E">E</option>
+                <option value="SE">SE</option>
+                <option value="S">S</option>
+                <option value="SW">SW</option>
+                <option value="W">W</option>
+                <option value="NW">NW</option>
+            </select>
+        </div>
+        <div class="form-row">
+            <label for="windSpeed">Wind Speed (km/h):</label>
+            <input type="number" step="0.1" id="windSpeed">
+        </div>
+        <div class="form-row">
+            <label for="windDirection">Wind Direction:</label>
+            <select id="windDirection">
+                <option value="">Any</option>
+                <option value="N">N</option>
+                <option value="NE">NE</option>
+                <option value="E">E</option>
+                <option value="SE">SE</option>
+                <option value="S">S</option>
+                <option value="SW">SW</option>
+                <option value="W">W</option>
+                <option value="NW">NW</option>
+            </select>
+        </div>
+        <div class="form-row">
+            <button id="searchButton">Search</button>
+        </div>
     </div>
 
     <ul id="results" class="result-list"></ul>

@@ -30,8 +30,7 @@ os.makedirs("data_aloha", exist_ok=True)
 os.makedirs("data_heartbeach", exist_ok=True)
 aloha_yt_url = "https://www.youtube.com/embed/XB2T9RjIM-g?autoplay=1&fs=1&rel=0&modestbranding=1&mute=1&vq=hd1080"
 heartbeach_yt_url = "https://www.youtube.com/embed/8nn9fAr9LCE?autoplay=1&mute=1&rel=0&showinfo=0&vq=hd1080"
-tide_file_path = r"C:/Github/surfconditions_database/hwlw-SCHEVNGN-20240101-20241231.xml"
-max_duration = timedelta(hours=10)
+tide_file_path = rf"{os.getcwd()}/hwlw-SCHEVNGN-20240101-20241231.xml"
 start_time = datetime.now()
 
 #%% Supporting funcs
@@ -74,7 +73,6 @@ def wait_until_next_hour(start_time):
     """
     Wait until the next capture cycle begins, subtracting the script execution time from the wait duration.
     """
-    elapsed_time = datetime.now() - start_time
     next_capture_time = start_time + timedelta(minutes=60)
     remaining_time = (next_capture_time - datetime.now()).total_seconds()
 
@@ -84,7 +82,8 @@ def wait_until_next_hour(start_time):
     else:
         logging.warning("Processing exceeded the one-hour cycle. Starting next cycle immediately.")
 
-
+def is_before_17pm():
+    return datetime.now().time() < datetime.strptime("17:00", "%H:%M").time()
 
 
 #%% Fetch from internet funcs
@@ -202,7 +201,7 @@ def main():
     heartbeach_driver = setup_driver(heartbeach_yt_url)
     aloha_driver = setup_driver(aloha_yt_url)
     try:
-        while datetime.now() - start_time < max_duration:
+        while is_before_17pm():
             cycle_start_time = datetime.now()
             capture_screenshots(heartbeach_driver, meteo_params, "data_heartbeach", "h")
             capture_screenshots(aloha_driver, meteo_params, "data_aloha", "a")

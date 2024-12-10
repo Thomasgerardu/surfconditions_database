@@ -4,154 +4,142 @@
 <head>
     <meta charset="UTF-8">
     <title>Surf Conditions Browser</title>
-    <style>
-        .explanation {
-            margin: 20px;
-            padding: 15px;
-            background-color: #f1f1f1;
-            border-radius: 5px;
-            font-family: Arial, sans-serif;
-            color: #333;
-        }
-
-        .result-image {
-            margin: 10px;
-            width: 200px;
-            height: auto;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal img {
-            max-width: 90%;
-            max-height: 90%;
-        }
-
-        .modal .close {
-            position: absolute;
-            top: 10px;
-            right: 20px;
-            font-size: 30px;
-            color: white;
-            cursor: pointer;
-        }
-    </style>
+    <link rel="stylesheet" href="static/style.css">
 </head>
 
 <body>
-    <div class="explanation">
-        <h2>How to Use the Surf Conditions Browser</h2>
-        <p>Enter values for any of the following fields to search for matching surf conditions:</p>
-        <ul>
-            <li><strong>Wave Height (m)</strong>: Specify the wave height in meters.</li>
-            <li><strong>Wave Period (s)</strong>: Enter the wave period in seconds.</li>
-            <li><strong>Wave Direction</strong>: Choose a wave direction from the dropdown.</li>
-            <li><strong>Wind Speed (km/h)</strong>: Enter the wind speed in kilometers per hour.</li>
-            <li><strong>Wind Direction</strong>: Choose a wind direction from the dropdown.</li>
-        </ul>
+    <div class="header">
+        <!-- <a href="#page1">Page 1</a> -->
+        <!-- <a href="#page2">Page 2</a> -->
+        <!-- <a href="#page3">Page 3</a> -->
+    </div>
+    <div class="content">
+        <div class="block">
+            <img src="/static/images/DALL·E 2024-12-10 21.16.27 - A surreal and humorous illustration of a surfer riding a wave, but instead of water, the wave is made of a golden, translucent liquid resembling urine.jpg" alt="Placeholder Image">
+        </div>
+        <div class="block">
+            <h1>!!!!!!!!!!!!!!!!!Testsite!!!!!!!!!!!!!!!!!</h1>
+            <h1>Surf Conditions Browser</h1>
+            <p>I got the inspiration for this website through surfing and my enthusiasm for Python. Often, surfers check
+                charts and websites for the best forecasts to be able to surf in the best conditions. Websites will
+                sometimes have star reviews of the surf conditions, giving an indication of how good the surf is likely
+                to be for less-experienced forecast readers, or very detailed charts and tables for the more
+                experienced. On top of that, we have the luxury in the Netherlands of great webcams, available 24/7.
+                However, many times I have been disappointed by forecasts. The setup looks great and the conditions seem
+                promising, but when the time comes, the surf still looks bad. For this reason, I wanted to capture the
+                live surf conditions using webcam images of those conditions. This way, we can create a database to
+                browse and see what 2m swell with an 8-second period and SW swell would actually look like!
+            </p>
+            <h3>Filenames</h3>
+            <p>Each image filename contains detailed information about the surf conditions at the time it was captured.
+                Here's how the format works:</p>
+            <ul>
+                <li><strong>Wave Direction:</strong> Indicates the direction of the waves (e.g., <code>N</code>,
+                    <code>NE</code>, <code>E</code>).</li>
+                <li><strong>Wave Height:</strong> Specifies the height of the waves in meters (e.g., <code>2.1m</code>).
+                </li>
+                <li><strong>Wave Period:</strong> Represents the time interval between waves, in seconds (e.g.,
+                    <code>6.5s</code>).</li>
+                <li><strong>Wind Direction:</strong> Shows the direction of the wind (e.g., <code>NW</code>,
+                    <code>SE</code>).</li>
+                <li><strong>Wind Speed:</strong> The speed of the wind, converted to km/h and formatted with
+                    <code>kmh</code> (e.g., <code>15.3kmh</code>).</li>
+                <li><strong>Tide Regime:</strong> Indicates the tidal phase (e.g., <code>ml</code> for mid-low,
+                    <code>mh</code> for mid-high).</li>
+                <li><strong>Timestamp:</strong> The date and time the image was captured in the format
+                    <code>YYYYMMDD_HHMMSS</code> (e.g., <code>20241111_091723</code>).</li>
+                <li><strong>Identifier:</strong> Identifier for webcamshot of Aloha or Heartbeach (e.g., <code>a</code>,
+                    <code>h</code>).</li>
+            </ul>
+            <h3>How to use this site?</h3>
+            <p>Enter your desired surf conditions below to find the best matches. Results are ranked by score, and <u>lower scores</u> mean the surf conditions are closer to your input. A perfect match will have a score of 0. To query a single parameter, simply input the desired value for that parameter and leave the other fields blank—they will be ignored in the scoring.</p>
+
+            <p>The score is calculated based on the following factors, with each weighted differently to reflect its importance:</p>
+            <ul>
+                <li><strong>Wave Height (50%):</strong> Larger differences from your desired wave height contribute significantly to the score.</li>
+                <li><strong>Wind Speed (20%):</strong> Smaller differences from your desired wind speed result in a lower score.</li>
+                <li><strong>Wave Direction (15%):</strong> A mismatch between your desired and the actual wave direction adds a penalty to the score.</li>
+                <li><strong>Wind Direction (15%):</strong> A mismatch between your desired and the actual wind direction also adds a penalty.</li>
+                <li><strong>Wave Period:</strong> Although less critical, differences in wave period still contribute to the score.</li>
+            </ul>
+            <p>This scoring system prioritizes wave height as the most important factor, followed by wind speed, and then the alignment of wave and wind directions. The closer the conditions match your search, the lower the score will be.</p>
+            
+
+        </div>
+        <div class="block">
+            <img src="/static/images/DALL·E 2024-12-10 21.16.44 - A surreal and humorous illustration of a surfer riding a wave, but instead of water, the wave is made of a thick, muddy substance resembling sludge. T.jpg" alt="Placeholder Image">
+        </div>
     </div>
 
-    <h1>Surf Conditions Browser</h1>
-    <label for="waveHeight">Wave Height (m):</label>
-    <input type="number" step="0.1" id="waveHeight"><br>
+    <div class="form-container">
+        <div class="form-row">
+            <label for="waveHeight">Wave Height (m):</label>
+            <input type="number" step="0.1" id="waveHeight">
+        </div>
+        <div class="form-row">
+            <label for="wavePeriod">Wave Period (s):</label>
+            <input type="number" step="0.1" id="wavePeriod">
+        </div>
+        <div class="form-row">
+            <label for="waveDirection">Wave Direction:</label>
+            <select id="waveDirection">
+                <option value="">Any</option>
+                <option value="N">N</option>
+                <option value="NE">NE</option>
+                <option value="E">E</option>
+                <option value="SE">SE</option>
+                <option value="S">S</option>
+                <option value="SW">SW</option>
+                <option value="W">W</option>
+                <option value="NW">NW</option>
+            </select>
+        </div>
+        <div class="form-row">
+            <label for="windSpeed">Wind Speed (km/h):</label>
+            <input type="number" step="0.1" id="windSpeed">
+        </div>
+        <div class="form-row">
+            <label for="windDirection">Wind Direction:</label>
+            <select id="windDirection">
+                <option value="">Any</option>
+                <option value="N">N</option>
+                <option value="NE">NE</option>
+                <option value="E">E</option>
+                <option value="SE">SE</option>
+                <option value="S">S</option>
+                <option value="SW">SW</option>
+                <option value="W">W</option>
+                <option value="NW">NW</option>
+            </select>
+        </div>
+        <div class="form-row">
+            <button id="searchButton">Search</button>
+        </div>
+    </div>
+    <!-- <div id="results-summary" style="display: none; margin-bottom: 20px; padding: 10px; border: 1px solid #ccc; background-color: #f9f9f9;">
+        <p id="results-summary-text"></p>
+    </div> -->
 
-    <label for="wavePeriod">Wave Period (s):</label>
-    <input type="number" step="0.1" id="wavePeriod"><br>
+    <div class="content">
+        <div class="block"></div>
+        <div class="block-center">
+            <div id="results-summary"></div>
+            <h3 id="results-summary-text"></h3>
+        </div>
+        <div class="block"></div>
+    </div>
 
-    <label for="waveDirection">Wave Direction:</label>
-    <select id="waveDirection">
-        <option value="">Any</option>
-        <!-- Direction options -->
-    </select><br>
 
-    <label for="windSpeed">Wind Speed (km/h):</label>
-    <input type="number" step="0.1" id="windSpeed"><br>
 
-    <label for="windDirection">Wind Direction:</label>
-    <select id="windDirection">
-        <option value="">Any</option>
-        <!-- Direction options -->
-    </select><br>
+    <ul id="results" class="result-list"></ul>
 
-    <button onclick="searchConditions()">Search</button>
-
-    <div id="results"></div>
-
-    <div class="modal" id="imageModal">
-        <span class="close" id="closeModal">&times;</span>
+    <!-- Modal for image viewing -->
+    <div id="imageModal" class="modal">
+        <span id="closeModal" class="close">&times;</span>
         <img id="modalImage" src="" alt="Large View">
     </div>
 
-    <script>
-        function searchConditions() {
-            const waveHeight = document.getElementById('waveHeight').value;
-            const wavePeriod = document.getElementById('wavePeriod').value;
-            const waveDirection = document.getElementById('waveDirection').value;
-            const windSpeed = document.getElementById('windSpeed').value;
-            const windDirection = document.getElementById('windDirection').value;
-
-            const params = new URLSearchParams();
-            if (waveHeight) params.append('wave_height', waveHeight);
-            if (wavePeriod) params.append('wave_period', wavePeriod);
-            if (waveDirection) params.append('wave_direction', waveDirection);
-            if (windSpeed) params.append('wind_speed', windSpeed);
-            if (windDirection) params.append('wind_direction', windDirection);
-
-            fetch('/search', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: params.toString()
-            })
-                .then(response => response.json())
-                .then(matches => {
-                    const resultsDiv = document.getElementById('results');
-                    resultsDiv.innerHTML = '<h3>Top 5 Matches</h3>';
-                    matches.forEach(url => {
-                        const img = document.createElement('img');
-                        img.src = url;
-                        img.alt = "Matching Condition Image";
-                        img.className = "result-image";
-                        img.onclick = () => showModal(url);
-                        resultsDiv.appendChild(img);
-                    });
-                });
-        }
-
-        const modal = document.getElementById('imageModal');
-        const modalImage = document.getElementById('modalImage');
-        const closeModal = document.getElementById('closeModal');
-
-        function showModal(imageSrc) {
-            modalImage.src = imageSrc;
-            modal.style.display = 'flex';
-        }
-
-        closeModal.onclick = () => {
-            modal.style.display = 'none';
-        };
-
-        window.onkeydown = (event) => {
-            if (event.key === 'Escape') {
-                modal.style.display = 'none';
-            }
-        };
-
-        window.onclick = (event) => {
-            if (event.target === modal) {
-                modal.style.display = 'none';
-            }
-        };
-    </script>
+    <script src="static/app.js"></script>
 </body>
 
 </html>

@@ -10,7 +10,7 @@ app = Flask(__name__)
 #     "data_heartbeach": "data_heartbeach"
 # }
 DATA_DIRS = {
-    "data": "new_folder_unique"
+    "data": "test_pics"
 }
 # Path to the SQLite database
 # DATABASE_PATH = "surfconditions.db"

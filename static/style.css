@@ -33,6 +33,11 @@ p {
     text-align: left;
 }
 
+.block-center{
+    text-align: center;
+    font-weight: bold;
+}
+
 .block img {
     width: 100%;
     max-width: 150px;

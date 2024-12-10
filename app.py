@@ -147,9 +147,12 @@ def search():
     wind_speed = float(request.form.get('wind_speed')) if request.form.get('wind_speed') else None
     wind_direction = request.form.get('wind_direction') if request.form.get('wind_direction') else None
 
-    # Query the database and calculate matches
+    # Query the database and count total images
     with sqlite3.connect("surfconditions.db") as conn:
         cur = conn.cursor()
+        cur.execute("SELECT COUNT(*) FROM images")
+        total_images = cur.fetchone()[0]
+
         cur.execute("SELECT folder, filename, wave_height, wave_period, wave_direction, wind_speed, wind_direction FROM images")
         results = cur.fetchall()
 
@@ -194,9 +197,14 @@ def search():
 
     # Sort matches by score and return the top N
     matches.sort(key=lambda x: x["score"])
-    return jsonify(matches[:10])
 
+    # Add total_images to the response
+    response = {
+        "total_images": total_images,
+        "matches": matches[:10]
+    }
 
+    return jsonify(response)
 
 if __name__ == '__main__':
     app.run(debug=True)

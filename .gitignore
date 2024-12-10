@@ -1,7 +1,6 @@
 .localsecret
-.log
-.xml
-data/
-data_aloha/
-data_heartbeach/
+*.log
+*.xml
+*.csv
+data*/
 venv/

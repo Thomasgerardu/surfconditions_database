@@ -25,10 +25,20 @@ function searchConditions() {
         body: params.toString()
     })
         .then(response => response.json())
-        .then(matches => {
+        .then(data => {
+            const { matches, total_images } = data; // Destructure the response
             const resultsList = document.getElementById('results');
-            resultsList.innerHTML = ''; // Clear previous results
+            const resultsSummary = document.getElementById('results-summary');
+            const resultsSummaryText = document.getElementById('results-summary-text');
 
+            // Update the summary text and display it
+            resultsSummaryText.textContent = `Out of ${total_images} pics, these are the best:`;
+            resultsSummary.style.display = 'block';
+
+            // Clear previous results
+            resultsList.innerHTML = '';
+
+            // Populate results
             matches.forEach(match => {
                 const item = document.createElement('li');
                 item.className = 'result-item';

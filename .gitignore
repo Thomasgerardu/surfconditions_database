@@ -1,6 +1,4 @@
 .localsecret
 *.log
-*.xml
-*.csv
 data*/
 venv/

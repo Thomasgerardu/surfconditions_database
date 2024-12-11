@@ -1,3 +1,8 @@
 Flask==2.3.2
 gunicorn==20.1.0
 # sqlite3
+# selenium
+# webdriver-manager
+# Pillow
+# requests
+# arrow

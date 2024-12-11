@@ -17,7 +17,7 @@ h1 {
 }
 
 p {
-    text-align: left;
+    text-align: justify;
     /* margin: 10px 20px; */
     font-size: 16px;
     color: #666;
@@ -43,6 +43,11 @@ p {
     max-width: 150px;
     height: auto;
     margin: 0 auto;
+}
+
+.align-right {
+    float: right;
+    margin-left: 10px;
 }
 
 

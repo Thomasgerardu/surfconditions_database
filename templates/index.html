@@ -15,59 +15,82 @@
     </div>
     <div class="content">
         <div class="block">
-            <img src="/static/images/DALL·E 2024-12-10 21.16.27 - A surreal and humorous illustration of a surfer riding a wave, but instead of water, the wave is made of a golden, translucent liquid resembling urine.jpg" alt="Placeholder Image">
+            <img src="/static/images/DALL·E 2024-12-10 21.16.27 - A surreal and humorous illustration of a surfer riding a wave, but instead of water, the wave is made of a golden, translucent liquid resembling urine.jpg"
+                alt="Placeholder Image">
         </div>
         <div class="block">
             <h1>!!!!!!!!!!!!!!!!!Testsite!!!!!!!!!!!!!!!!!</h1>
             <h1>Surf Conditions Browser</h1>
-            <p>I got the inspiration for this website through surfing and my enthusiasm for Python. Often, surfers check
-                charts and websites for the best forecasts to be able to surf in the best conditions. Websites will
-                sometimes have star reviews of the surf conditions, giving an indication of how good the surf is likely
-                to be for less-experienced forecast readers, or very detailed charts and tables for the more
-                experienced. On top of that, we have the luxury in the Netherlands of great webcams, available 24/7.
-                However, many times I have been disappointed by forecasts. The setup looks great and the conditions seem
-                promising, but when the time comes, the surf still looks bad. For this reason, I wanted to capture the
-                live surf conditions using webcam images of those conditions. This way, we can create a database to
-                browse and see what 2m swell with an 8-second period and SW swell would actually look like!
+            <p>
+                I got the inspiration for this website through surfing and my enthusiasm for Python. Every surf session
+                starts with checking the forecasts to see when is the best time to go. The best time to go is when surf
+                conditions are good, meaning offshore wind, long periods, sufficient wave height, and other parameters
+                (tide, wave direction, etc.). I live in Den Haag, and I usually surf in Scheveningen. We are spoiled in
+                terms of information because we have websites such as windy.com, windguru.com, two (!) cams that are
+                available 24/7, and you can even get a plan for a WhatsApp forecast service by a guy (Tobias) who is
+                well-versed in Dutch surf forecasting, telling us surfers when to go.
+                So, we have all the information to give us an indication of the forecasted surf conditions, but the
+                burning question is … what do those conditions look like? 2 meters swell, offshore breeze, and a period
+                of 10 seconds sounds great, right? Want to see how that looks? This website will take in your conditions
+                and match them to the closest match there is from the snapshots I have taken from the surf cams (<a href="https://www.youtube.com/embed/8nn9fAr9LCE?autoplay=1&mute=1&rel=0&showinfo=0&vq=hd1080" target="_blank">Heartbeach</a> and <a href="https://www.youtube.com/embed/XB2T9RjIM-g?autoplay=1&fs=1&rel=0&modestbranding=1&mute=1&vq=hd1080" target="_blank">Aloha</a>). The
+                database holds 10,000 snapshots and many different surf conditions.
             </p>
             <h3>Filenames</h3>
-            <p>Each image filename contains detailed information about the surf conditions at the time it was captured.
+            <p>Each image filename contains detailed information about the surf conditions at the time it was captured. These surfconditions were fetched using <a href="https://stormglass.io" target="_blank">Stormglass' API</a> service. 
                 Here's how the format works:</p>
             <ul>
                 <li><strong>Wave Direction:</strong> Indicates the direction of the waves (e.g., <code>N</code>,
-                    <code>NE</code>, <code>E</code>).</li>
+                    <code>NE</code>, <code>E</code>).
+                </li>
                 <li><strong>Wave Height:</strong> Specifies the height of the waves in meters (e.g., <code>2.1m</code>).
                 </li>
                 <li><strong>Wave Period:</strong> Represents the time interval between waves, in seconds (e.g.,
-                    <code>6.5s</code>).</li>
+                    <code>6.5s</code>).
+                </li>
                 <li><strong>Wind Direction:</strong> Shows the direction of the wind (e.g., <code>NW</code>,
-                    <code>SE</code>).</li>
-                <li><strong>Wind Speed:</strong> The speed of the wind, converted to km/h and formatted with
-                    <code>kmh</code> (e.g., <code>15.3kmh</code>).</li>
-                <li><strong>Tide Regime:</strong> Indicates the tidal phase (e.g., <code>ml</code> for mid-low,
-                    <code>mh</code> for mid-high).</li>
+                    <code>SE</code>).
+                </li>
+                <li><strong>Wind Speed:</strong> The speed of the wind in kmh (e.g., <code>15.3kmh</code>).
+                </li>
+                <li><strong>Tide Regime:</strong> Indicates the tidal phase (e.g., <code>ml</code> for mid to low,
+                    <code>mh</code> for mid to high).
+                </li>
                 <li><strong>Timestamp:</strong> The date and time the image was captured in the format
-                    <code>YYYYMMDD_HHMMSS</code> (e.g., <code>20241111_091723</code>).</li>
+                    <code>YYYYMMDD_HHMMSS</code> (e.g., <code>20241111_091723</code>).
+                </li>
                 <li><strong>Identifier:</strong> Identifier for webcamshot of Aloha or Heartbeach (e.g., <code>a</code>,
-                    <code>h</code>).</li>
+                    <code>h</code>).
+                </li>
             </ul>
             <h3>How to use this site?</h3>
-            <p>Enter your desired surf conditions below to find the best matches. Results are ranked by score, and <u>lower scores</u> mean the surf conditions are closer to your input. A perfect match will have a score of 0. To query a single parameter, simply input the desired value for that parameter and leave the other fields blank—they will be ignored in the scoring.</p>
+            <p>Enter your desired surf conditions below and the script returns the best matches. Results are ranked by score, and
+                <strong>lower scores</strong> mean the surf conditions are closer to your input. A perfect match will have a score
+                of 0. To query a single parameter, simply input the desired value for that parameter and leave the other
+                fields blank—they will be ignored in the scoring.</p>
 
-            <p>The score is calculated based on the following factors, with each weighted differently to reflect its importance:</p>
+            <p>The score is calculated based on the following factors, with each weighted differently to reflect its
+                importance:</p>
             <ul>
-                <li><strong>Wave Height (50%):</strong> Larger differences from your desired wave height contribute significantly to the score.</li>
-                <li><strong>Wind Speed (20%):</strong> Smaller differences from your desired wind speed result in a lower score.</li>
-                <li><strong>Wave Direction (15%):</strong> A mismatch between your desired and the actual wave direction adds a penalty to the score.</li>
-                <li><strong>Wind Direction (15%):</strong> A mismatch between your desired and the actual wind direction also adds a penalty.</li>
-                <li><strong>Wave Period:</strong> Although less critical, differences in wave period still contribute to the score.</li>
+                <li><strong>Wave Height (50%):</strong> Larger differences from your desired wave height contribute
+                    significantly to the score.</li>
+                <li><strong>Wind Speed (20%):</strong> Smaller differences from your desired wind speed result in a
+                    lower score.</li>
+                <li><strong>Wave Direction (15%):</strong> A mismatch between your desired and the actual wave direction
+                    adds a penalty to the score.</li>
+                <li><strong>Wind Direction (15%):</strong> A mismatch between your desired and the actual wind direction
+                    also adds a penalty.</li>
+                <li><strong>Wave Period:</strong> Although less critical, differences in wave period still contribute to
+                    the score.</li>
             </ul>
-            <p>This scoring system prioritizes wave height as the most important factor, followed by wind speed, and then the alignment of wave and wind directions. The closer the conditions match your search, the lower the score will be.</p>
-            
+            <p>This scoring system prioritizes wave height as the most important factor, followed by wind speed, and
+                then the alignment of wave and wind directions. The closer the conditions match your search, the lower
+                the score will be.</p>
+
 
         </div>
         <div class="block">
-            <img src="/static/images/DALL·E 2024-12-10 21.16.44 - A surreal and humorous illustration of a surfer riding a wave, but instead of water, the wave is made of a thick, muddy substance resembling sludge. T.jpg" alt="Placeholder Image">
+            <img src="/static/images/DALL·E 2024-12-10 21.16.44 - A surreal and humorous illustration of a surfer riding a wave, but instead of water, the wave is made of a thick, muddy substance resembling sludge. T.jpg"
+                alt="Placeholder Image" class="align-right"> 
         </div>
     </div>
 

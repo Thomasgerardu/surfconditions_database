@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Surf Conditions Browser</title>
+    <link rel="stylesheet" href="static/style.css">
+</head>
+
+<body>
+    <div class="header">
+        <a href="/">Home</a>
+    </div>
+    <div class="content">
+        <div class="block">
+            <img src="/static/images/DALL·E 2024-12-10 21.16.27 - A surreal and humorous illustration of a surfer riding a wave, but instead of water, the wave is made of a golden, translucent liquid resembling urine.jpg"
+                alt="Placeholder Image">
+        </div>
+        <div class="block">
+            <h1>How I build this site :)</h1>
+            <p>
+                I got the inspiration for this website through surfing and my enthusiasm for Python. Every surf session
+                starts with checking the forecasts to see when is the best time to go. The best time to go is when surf
+                conditions are good, meaning offshore wind, long periods, sufficient wave height, and other parameters
+                (tide, wave direction, etc.). I live in Den Haag, and I usually surf in Scheveningen. We are spoiled in
+                terms of information because we have websites such as windy.com, windguru.com, two (!) cams that are
+                available 24/7, and you can even get a plan for a WhatsApp forecast service by a guy (Tobias) who is
+                well-versed in Dutch surf forecasting, telling us surfers when to go.
+                So, we have all the information to give us an indication of the forecasted surf conditions, but the
+                burning question is … what do those conditions look like? 2 meters swell, offshore breeze, and a period
+                of 10 seconds sounds great, right? Want to see how that looks? This website will take in your conditions
+                and match them to the closest match there is from the snapshots I have taken from the surf cams (<a
+                    href="https://www.youtube.com/embed/8nn9fAr9LCE?autoplay=1&mute=1&rel=0&showinfo=0&vq=hd1080"
+                    target="_blank">Heartbeach</a> and <a
+                    href="https://www.youtube.com/embed/XB2T9RjIM-g?autoplay=1&fs=1&rel=0&modestbranding=1&mute=1&vq=hd1080"
+                    target="_blank">Aloha</a>). The
+                database<strong>holds only 155/10k+ snapshots as it is in development.</strong>
+            </p>
+            <h2>Data collection</h2>
+            <p>Data is collected from two YouTube surf streams (Aloha and Heartbeach). Since my goal is to provide
+                pictures, I take snapshots of the YouTube streams. Both cameras have a built-in swoop with a fairly
+                consistent timer, allowing a full view of all angles if snapshots are taken for 1-2 minutes. The primary
+                objective is to first gather pictures and later evaluate their quality and usefulness. As surf
+                conditions change throughout the day, the script captures 80 snapshots from each camera, with a 2-second
+                delay between each, every hour during daylight. This process takes about 5 minutes per hour, after which
+                the script sleeps until the next scheduled capture.</p>
+            <h2>Data cleaning</h2>
+            <p>
+                <img class="custom-img modal-trigger" src="/static/images/val_pred_boei_hek.jpg" alt="Picture 1"
+                    style="margin-right: 20px;">
+                <img class="custom-img modal-trigger" src="/static/images/val_pred_vuurtoren.jpg" alt="Vuurtoren">
+            </p>
+            <p> Cool images right? </p>
+
+            <!-- Reusable Modal -->
+            <div id="imageModal" class="modal">
+                <span id="closeModal" class="close">&times;</span>
+                <img id="modalImage" src="" alt="Large View">
+            </div>
+            <h2>Data presentation</h2>
+            <p>Hu</p>
+
+        </div>
+        <div class="block">
+            <img src="/static/images/DALL·E 2024-12-10 21.16.44 - A surreal and humorous illustration of a surfer riding a wave, but instead of water, the wave is made of a thick, muddy substance resembling sludge. T.jpg"
+                alt="Placeholder Image" class="align-right">
+        </div>
+    </div>
+    <script src="static/app.js"></script>
+</body>
+
+</html>

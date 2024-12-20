@@ -125,7 +125,7 @@ def capture_screenshots(driver, meteo_params, folder, identifier):
     # Fetch tide range
     tide_data = parse_tides(tide_file_path)
     current_tide_phase = find_current_tide_phase(tide_data)
-    for i in range(50):
+    for i in range(80):
         try:
             screenshot = driver.get_screenshot_as_png()
             image = Image.open(BytesIO(screenshot))
@@ -135,8 +135,8 @@ def capture_screenshots(driver, meteo_params, folder, identifier):
             logging.info(f"Screenshot {i+1} saved as {filename[len(folder)+1:]}")
         except Exception as e:
             logging.error(f"Unexpected error taking screenshot {i + 1}: {e}")
-        if i < 49:
-            time.sleep(3)
+        if i < 79:
+            time.sleep(1.5)
 
 
 

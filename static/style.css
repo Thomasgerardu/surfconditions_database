@@ -45,6 +45,13 @@ p {
     margin: 0 auto;
 }
 
+.block img.custom-img {
+    width: 47%;
+    max-width: none;
+    height: auto;
+}
+
+
 .align-right {
     float: right;
     margin-left: 10px;

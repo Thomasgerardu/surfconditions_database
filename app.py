@@ -139,6 +139,11 @@ def index():
     """
     return render_template('index.html')
 
+@app.route("/about")
+def about():
+    return render_template("about.html")  # Your about page template
+
+
 @app.route('/search', methods=['POST'])
 def search():
     """

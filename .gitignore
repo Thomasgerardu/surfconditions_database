@@ -1,4 +1,7 @@
 .localsecret
 *.log
 data*/
+aloha*/
+heartbeach*/
 venv/
+pics_with_surfers*/

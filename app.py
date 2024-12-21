@@ -13,8 +13,8 @@ DATA_DIRS = {
     "data": "test_pics"
 }
 # Path to the SQLite database
-# DATABASE_PATH = "surfconditions.db"
-DATABASE_PATH = "surfdatabase_test.db"
+DATABASE_PATH = "surfconditions.db"
+# DATABASE_PATH = "surfdatabase_test.db"
 # Map to 8 primary compass directions
 PRIMARY_DIRECTIONS = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"]
 
@@ -81,7 +81,8 @@ def find_best_matches(wave_height=None, wave_period=None, wave_direction=None, w
     """
     Finds the best matching images based on the provided conditions.
     """
-    with sqlite3.connect("surfdatabase_test.db") as conn: #aanpassen
+    # with sqlite3.connect("surfdatabase_test.db") as conn: #aanpassen
+    with sqlite3.connect("surfdatabase.db") as conn: #aanpassen
         cur = conn.cursor()
         cur.execute("SELECT folder, filename, wave_height, wave_period, wave_direction, wind_speed, wind_direction FROM images_test") #aanpassen
         results = cur.fetchall()
@@ -157,15 +158,15 @@ def search():
     wind_direction = request.form.get('wind_direction') if request.form.get('wind_direction') else None
 
     # Query the database and count total images
-    # with sqlite3.connect("surfconditions.db") as conn:
-    with sqlite3.connect("surfdatabase_test.db") as conn:
+    with sqlite3.connect("surfconditions.db") as conn:
+    # with sqlite3.connect("surfdatabase_test.db") as conn:
         cur = conn.cursor()
-        # cur.execute("SELECT COUNT(*) FROM images")
-        cur.execute("SELECT COUNT(*) FROM images_test")
+        cur.execute("SELECT COUNT(*) FROM images")
+        # cur.execute("SELECT COUNT(*) FROM images_test")
         total_images = cur.fetchone()[0]
 
-        # cur.execute("SELECT folder, filename, wave_height, wave_period, wave_direction, wind_speed, wind_direction FROM images")
-        cur.execute("SELECT folder, filename, wave_height, wave_period, wave_direction, wind_speed, wind_direction FROM images_test")
+        cur.execute("SELECT folder, filename, wave_height, wave_period, wave_direction, wind_speed, wind_direction FROM images")
+        # cur.execute("SELECT folder, filename, wave_height, wave_period, wave_direction, wind_speed, wind_direction FROM images_test")
         results = cur.fetchall()
 
     matches = []

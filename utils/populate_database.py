@@ -3,8 +3,9 @@ import sqlite3
 
 # Paths to the data folders
 DATA_FOLDERS = {
-    "data_aloha": "data_aloha",
-    "data_heartbeach": "data_heartbeach"
+    # "data_aloha": "data_aloha",
+    # "data_heartbeach": "data_heartbeach"
+    "data": "test_pics"
 }
 
 # Database path
@@ -49,6 +50,10 @@ def populate_database():
     conn = sqlite3.connect(DATABASE_PATH)
     cur = conn.cursor()
 
+    # Clear the existing data in the images table
+    cur.execute("DELETE FROM images;")  # Removes all rows from the table
+    conn.commit()  # Apply the deletion
+
     # Iterate through each folder and file
     for folder_label, folder_path in DATA_FOLDERS.items():
         if not os.path.exists(folder_path):
@@ -56,7 +61,7 @@ def populate_database():
             continue
 
         for filename in os.listdir(folder_path):
-            if not filename.endswith(".png"):
+            if not filename.endswith((".png", ".jpg")):
                 continue
 
             # Parse metadata from the filename

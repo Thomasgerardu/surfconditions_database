@@ -34,29 +34,76 @@
                     target="_blank">Heartbeach</a> and <a
                     href="https://www.youtube.com/embed/XB2T9RjIM-g?autoplay=1&fs=1&rel=0&modestbranding=1&mute=1&vq=hd1080"
                     target="_blank">Aloha</a>). The
-                database<strong>holds only 155/10k+ snapshots as it is in development.</strong>
+                database<strong> holds only 155/10k+ snapshots as it is in development.</strong>
             </p>
             <h2>Data collection</h2>
-            <p>Data is collected from two YouTube surf streams (Aloha and Heartbeach). Since my goal is to provide
+            <p>
+                Data is collected from two YouTube surf streams (Aloha and Heartbeach). Since my goal is to provide
                 pictures, I take snapshots of the YouTube streams. Both cameras have a built-in swoop with a fairly
                 consistent timer, allowing a full view of all angles if snapshots are taken for 1-2 minutes. The primary
                 objective is to first gather pictures and later evaluate their quality and usefulness. As surf
                 conditions change throughout the day, the script captures 80 snapshots from each camera, with a 2-second
                 delay between each, every hour during daylight. This process takes about 5 minutes per hour, after which
-                the script sleeps until the next scheduled capture.</p>
+                the script sleeps until the next scheduled capture.
+            </p>
             <h2>Data cleaning</h2>
             <p>
+                My initial idea for data cleaning was to just take a whole lot of pictures and filter out the non-sharp
+                ones. Apparently, this can be done fairly easily with OpenCV's cv2.Laplacian function. Under the hood,
+                math is applied to compute the second derivative of the image, which emphasizes regions of rapid
+                intensity
+                change (like edges). A sharp image will have more prominent edges, resulting in a larger variance of the
+                Laplacian. A blurry image will have less pronounced edges, resulting in a smaller variance. You then
+                just have to
+                set a threshold for what you qualify as blurry or not blurry. This proved to be different for images
+                from the
+                Heartbeach cam versus Aloha cam. I found out that some images that were considered blurry were still
+                useful/good pics. On top of that, some pics might be sharp but not useful, like snapshots taken of the
+                outer edges of the camera swoop (either pictures of the distant pier or Rotterdamse haven).
+            </p>
+            <img class="custom-img modal-trigger" src="/static/images/notblur.png" alt="Aloha_not_blurry"
+                style="margin-right: 20px;">
+            <img class="custom-img modal-trigger" src="/static/images/blur.png" alt="heartbeach_blurry">
+            <p>
+                I then discovered Yolo, “You only look once” (). A great and fairly easy object identification machine
+                learning
+                model that could be trained on custom data, like my surfpics. I had a gut feeling that recognising
+                surfers
+                on the images was going to be difficult, as the images are definitely not photo quality (they are stills
+                from a video). So my approach was to detect the buoy, red lighthouse of the scheveningen harbour and the
+                gate towards said lighthouse, as these were the stills that capture were surfers usually surf. in other
+                words, if these objects were identified on the pics and there are waves, there’s a high probability that
+                surfers are in the pictures.
+
+                Training a model is quite easy, but takes some time to set up. You have to select some pictures (60 in
+                my
+                case) to train the data on. This tutorial helped me a lot to get started <a
+                    href="https://www.youtube.com/watch?v=GRtgLlwxpc4&t=212s" target="_blank">Yolo tutorial.</a> <br>
+
+                Steps to train your model to recognise custom objects is quite simple:
+            <ol>
+                <li>Select images suitable for training</li>
+                <li>Label the objects in the images with a website like <a href="https://roboflow.com/"
+                        target="_blank">Roboflow</a> or <a href="https://makesense.ai" target="_blank">Makesense</a>
+                </li>
+                <li>Train the model (done like <a href="https://docs.ultralytics.com/modes/train/#introduction"
+                        target="_blank">so</a> and <a href="https://www.youtube.com/watch?v=PfQwNe0P-G4"
+                        target="_blank">so</a> (this guy is a great resource btw!)) </li>
+                <li>Use the model to detect objects in your images!</li>
+            </ol>
+            </p>
+            <p>
+                Below, I show you two pictures of the model's performance. Since I am not too perfectionistic here, I
+                care if there is some degree of certainty as to whether one of the objects is detected in the image.
+                On the left side, predictions of a model trained on pictures of Aloha, on the right side the predictions
+                of a model trained on Heartbeach images. The higher the number, the higher the probability of class
+                recognition. So ‘Vuurtoren’ at 0.4 (or 40% certainty) is not great, but good enough for this project!
+                <br><br>
                 <img class="custom-img modal-trigger" src="/static/images/val_pred_boei_hek.jpg" alt="Picture 1"
                     style="margin-right: 20px;">
                 <img class="custom-img modal-trigger" src="/static/images/val_pred_vuurtoren.jpg" alt="Vuurtoren">
             </p>
-            <p> Cool images right? </p>
 
-            <!-- Reusable Modal -->
-            <div id="imageModal" class="modal">
-                <span id="closeModal" class="close">&times;</span>
-                <img id="modalImage" src="" alt="Large View">
-            </div>
             <h2>Data presentation</h2>
             <p>Hu</p>
 
@@ -64,6 +111,11 @@
         <div class="block">
             <img src="/static/images/DALL·E 2024-12-10 21.16.44 - A surreal and humorous illustration of a surfer riding a wave, but instead of water, the wave is made of a thick, muddy substance resembling sludge. T.jpg"
                 alt="Placeholder Image" class="align-right">
+        </div>
+        <!-- Reusable Modal -->
+        <div id="imageModal" class="modal">
+            <span id="closeModal" class="close">&times;</span>
+            <img id="modalImage" src="" alt="Large View">
         </div>
     </div>
     <script src="static/app.js"></script>

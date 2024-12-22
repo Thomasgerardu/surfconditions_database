@@ -214,7 +214,7 @@ def search():
     # Add total_images to the response
     response = {
         "total_images": total_images,
-        "matches": matches[:10]
+        "matches": matches[:30]
     }
 
     return jsonify(response)

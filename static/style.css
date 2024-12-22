@@ -16,11 +16,17 @@ h1 {
     /* Warm red for the title */
 }
 
+code {
+    background: #f9f9f9;
+    /* Light grey background for code */
+    padding: 2px 4px;
+    border-radius: 4px;
+}
 p {
     text-align: justify;
     /* margin: 10px 20px; */
     font-size: 16px;
-    color: #666;
+    /* color: #666; */
 }
 .content {
     display: grid;
@@ -40,7 +46,7 @@ p {
 
 .block img {
     width: 100%;
-    max-width: 150px;
+    max-width: 70%;
     height: auto;
     margin: 0 auto;
 }
@@ -75,6 +81,39 @@ p {
 }
 
 .header a:hover {
+    text-decoration: underline;
+}
+
+.footer {
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 1rem 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.footer ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+
+.footer li {
+    flex: 1;
+    text-align: center;
+}
+
+.footer a {
+    color: #0073e6;
+    text-decoration: none;
+}
+
+.footer a:hover {
     text-decoration: underline;
 }
 

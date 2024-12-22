@@ -17,36 +17,47 @@
                 alt="Placeholder Image">
         </div>
         <div class="block">
-            <h1>How I build this site :)</h1>
+            <h1>Why?</h1>
             <p>
                 I got the inspiration for this website through surfing and my enthusiasm for Python. Every surf session
                 starts with checking the forecasts to see when is the best time to go. The best time to go is when surf
                 conditions are good, meaning offshore wind, long periods, sufficient wave height, and other parameters
-                (tide, wave direction, etc.). I live in Den Haag, and I usually surf in Scheveningen. We are spoiled in
-                terms of information because we have websites such as windy.com, windguru.com, two (!) cams that are
+                (tide, wave direction, etc.). So what do good surf cnoditions look like?</p>
+            <p>
+                I live in Den Haag, and I usually surf in Scheveningen. We are spoiled in
+                terms of information because we have websites such as <a href="https://www.windy.com"
+                    target="_blank">windy.com</a>, <a href="https://www.windguru.cz/572"
+                    target="_blank">windguru.com</a>, two (!) cams that are
                 available 24/7, and you can even get a plan for a WhatsApp forecast service by a guy (Tobias) who is
-                well-versed in Dutch surf forecasting, telling us surfers when to go.
+                well-versed in Dutch surf forecasting, telling us surfers when to go <a href="https://surfweer.nl/"
+                    target="_blank">here</a>.
                 So, we have all the information to give us an indication of the forecasted surf conditions, but the
                 burning question is … what do those conditions look like? 2 meters swell, offshore breeze, and a period
-                of 10 seconds sounds great, right? Want to see how that looks? This website will take in your conditions
-                and match them to the closest match there is from the snapshots I have taken from the surf cams (<a
+                of 10 seconds sounds great, right? Want to see how that looks?
+            </p>
+            <p> This website will take in your conditions and match them to the closest match there is from the
+                pictures
+                I have taken from the surf cams (<a
                     href="https://www.youtube.com/embed/8nn9fAr9LCE?autoplay=1&mute=1&rel=0&showinfo=0&vq=hd1080"
                     target="_blank">Heartbeach</a> and <a
                     href="https://www.youtube.com/embed/XB2T9RjIM-g?autoplay=1&fs=1&rel=0&modestbranding=1&mute=1&vq=hd1080"
                     target="_blank">Aloha</a>). The
-                database<strong> holds only 155/10k+ snapshots as it is in development.</strong>
+                database<strong> holds only 3582/10k+ pictures as it is in development.</strong>
             </p>
-            <h2>Data collection</h2>
+            <h1>How:</h1>
+            <h2>1. Data collection</h2>
             <p>
                 Data is collected from two YouTube surf streams (Aloha and Heartbeach). Since my goal is to provide
-                pictures, I take snapshots of the YouTube streams. Both cameras have a built-in swoop with a fairly
-                consistent timer, allowing a full view of all angles if snapshots are taken for 1-2 minutes. The primary
+                pictures, I take pictures of the YouTube streams. Both cameras have a built-in swoop with a fairly
+                consistent timer, allowing a full view of all angles if pictures are taken for 1-2 minutes. The primary
                 objective is to first gather pictures and later evaluate their quality and usefulness. As surf
-                conditions change throughout the day, the script captures 80 snapshots from each camera, with a 2-second
+                conditions change throughout the day, the script captures 80 pictures from each camera, with a 2-second
                 delay between each, every hour during daylight. This process takes about 5 minutes per hour, after which
                 the script sleeps until the next scheduled capture.
             </p>
-            <h2>Data cleaning</h2>
+            <h2>2. Data processing</h2>
+
+            <h3>2.1 Filtering out blurry images</h3>
             <p>
                 My initial idea for data cleaning was to just take a whole lot of pictures and filter out the non-sharp
                 ones. Apparently, this can be done fairly easily with OpenCV's cv2.Laplacian function. Under the hood,
@@ -56,22 +67,31 @@
                 Laplacian. A blurry image will have less pronounced edges, resulting in a smaller variance. You then
                 just have to
                 set a threshold for what you qualify as blurry or not blurry. This proved to be different for images
-                from the
-                Heartbeach cam versus Aloha cam. I found out that some images that were considered blurry were still
-                useful/good pics. On top of that, some pics might be sharp but not useful, like snapshots taken of the
+                from the Heartbeach cam versus Aloha cam. I found that some images that were considered blurry were
+                still
+                useful/good pics.
+                On top of that, some pics might be sharp but not useful, like pictures taken of the
                 outer edges of the camera swoop (either pictures of the distant pier or Rotterdamse haven).
             </p>
+            <p>The following images showcase that the picture with lower Laplacian Variance is <i>less</i> blurry than
+                the picture with high Laplacian Variance. Normally, higher values indicates sharper pictures. This could
+                be due to of the sharp overlayer on the Aloha pictures</p>
+
             <img class="custom-img modal-trigger" src="/static/images/notblur.png" alt="Aloha_not_blurry"
                 style="margin-right: 20px;">
             <img class="custom-img modal-trigger" src="/static/images/blur.png" alt="heartbeach_blurry">
+            <h3>2.2 Filtering on camera angles of interest</h3>
             <p>
-                I then discovered Yolo, “You only look once” (). A great and fairly easy object identification machine
+                I then discovered YOLO, “You Only Look Once” (<a href="https://www.ultralytics.com/"
+                    target="_blank">YOLO</a>). A great and fairly easy object identification machine
                 learning
                 model that could be trained on custom data, like my surfpics. I had a gut feeling that recognising
                 surfers
-                on the images was going to be difficult, as the images are definitely not photo quality (they are stills
+                on the images was going to be difficult, as the images are definitely not photo quality (they are
+                pictures
                 from a video). So my approach was to detect the buoy, red lighthouse of the scheveningen harbour and the
-                gate towards said lighthouse, as these were the stills that capture were surfers usually surf. in other
+                gate towards said lighthouse, as these were the pictures that capture were surfers usually surf. in
+                other
                 words, if these objects were identified on the pics and there are waves, there’s a high probability that
                 surfers are in the pictures.
 
@@ -103,9 +123,30 @@
                     style="margin-right: 20px;">
                 <img class="custom-img modal-trigger" src="/static/images/val_pred_vuurtoren.jpg" alt="Vuurtoren">
             </p>
-
-            <h2>Data presentation</h2>
-            <p>Hu</p>
+            <h3>2.3 Post processing</h3>
+            <p>
+                After filtering out blurry images and images that do not contain the objects of interest, I have a
+                dataset of images that are useful. Because I want to keep this project as cheap as possible (I only pay
+                for the domain name which is 7 $ a year) I want to avoid paying for an expensive backend to store all the
+                images. Therefore, I reduced image quality so they are much smaller in size. To the eye, this is only a
+                slight loss but in terms of data storage, this is a huge win.
+                You might ask, why not capture pictures of a lower quality stream? I found that lower quality streams
+                are
+                visibly much worse in quality and the image size is still not very small.
+            </p>
+            <h2>3. Data presentation</h2>
+            <p>With all the pictures selected and downsized, they are ready to be browsed and presented. I built the
+                site using Flask. This is the stack:
+            <ul>
+                <li><strong>Frontend:</strong> HTML, CSS, JavaScript</li>
+                <li><strong>Backend:</strong> Flask (Python)</li>
+                <li><strong>Database:</strong> SQLite</li>
+                <li><strong>Hosting:</strong> Render</li>
+            </ul>
+            I use a free tier of Render, which has the limitation that the site needs to be spun-up when visited on a
+            new occasion. It stays online for only like 5 minutes. So you basically have to start it, like and old car
+            :).
+            </p>
 
         </div>
         <div class="block">
@@ -117,6 +158,13 @@
             <span id="closeModal" class="close">&times;</span>
             <img id="modalImage" src="" alt="Large View">
         </div>
+    </div>
+    <div class="footer">
+        <ul>
+            <li>Email: <a href="mailto:thomasgerardu@gmail.com">thomasgerardu@gmail.com</a></li>
+            <li>GitHub: <a href="https://github.com/Thomasgerardu/" target="_blank">Github</a></li>
+            <li>LinkedIn: <a href="https://www.linkedin.com/in/thomasgerardu/" target="_blank">LinkedIn</a></li>
+        </ul>
     </div>
     <script src="static/app.js"></script>
 </body>

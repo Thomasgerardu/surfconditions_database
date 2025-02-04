@@ -30,7 +30,7 @@ os.makedirs("data_aloha", exist_ok=True)
 os.makedirs("data_heartbeach", exist_ok=True)
 aloha_yt_url = "https://www.youtube.com/embed/XB2T9RjIM-g?autoplay=1&fs=1&rel=0&modestbranding=1&mute=1&vq=hd1080"
 heartbeach_yt_url = "https://www.youtube.com/embed/8nn9fAr9LCE?autoplay=1&mute=1&rel=0&showinfo=0&vq=hd1080"
-tide_file_path = rf"{os.getcwd()}/hwlw-SCHEVNGN-20240101-20241231.xml"
+tide_file_path = rf"{os.getcwd()}/hwlw-SCHEVNGN-20250101-20251231.xml"
 start_time = datetime.now()
 
 #%% Supporting funcs
